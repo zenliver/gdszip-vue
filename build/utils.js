@@ -47,7 +47,8 @@ exports.cssLoaders = function (options) {
     if (options.extract) {
       return ExtractTextPlugin.extract({
         use: loaders,
-        fallback: 'vue-style-loader'
+        fallback: 'vue-style-loader',
+        publicPath: './../../' // 加入此行即可解决打包时字体路径的问题
       })
     } else {
       return ['vue-style-loader'].concat(loaders)

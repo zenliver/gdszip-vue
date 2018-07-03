@@ -59,7 +59,7 @@ Vue.prototype.$nprogress = NProgress;
 
 // axios
 import axios from 'axios';
-axios.defaults.baseURL = 'http://142.0.139.17';
+axios.defaults.baseURL = 'https://www.gdszip.com';
 // 添加请求计数器
 var requestNum = 0;
 // 添加请求拦截器

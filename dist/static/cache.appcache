@@ -1,10 +1,10 @@
 CACHE MANIFEST
-# version: 1.4
+# version: 1.6
 
 CACHE:
-#./../index.html
 ./img/logo.6fb5270.png
 ./img/footer_weixin_qrcode.a0faa3f.jpg
+./images/banner_inner.jpg
 
 FALLBACK:
 
