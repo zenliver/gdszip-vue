@@ -1,0 +1,13 @@
+CACHE MANIFEST
+# version: 1.4
+
+CACHE:
+#./../index.html
+./img/logo.6fb5270.png
+./img/footer_weixin_qrcode.a0faa3f.jpg
+
+FALLBACK:
+
+
+NETWORK:
+*
