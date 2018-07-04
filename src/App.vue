@@ -1,17 +1,24 @@
 <template>
     <div id="app">
 
-        <div id="app_wrapper" :class="appWrapperSlideClass" @animationend="removeAnimationClass">
+        <div id="app_loading" :style="appLoadingStyle" v-if="!reduxDataLoaded">
+            <div class="app_loading_logo">
+                <img src="./assets/images/logo.png" alt="" class="img-responsive">
+            </div>
+            <div class="app_loading_el" v-loading="true" element-loading-text="加载中..." element-loading-background="#f1f1f1"></div>
+        </div>
+
+        <div id="app_wrapper" :class="appWrapperSlideClass" @animationend="removeAnimationClass" v-if="reduxDataLoaded">
             <Header :optionUpdated="optionUpdated" @toggleButtonClicked="showCollapseMenu"></Header>
             <div id="header_placeholder"></div>
             <BannerInner v-if="isNotIndexRoute"></BannerInner>
             <transition name="fade">
-                <router-view :reduxData="reduxData" :optionUpdated="optionUpdated" :contentUpdated="contentUpdated" v-if="isReduxDataLoaded"></router-view>
+                <router-view :reduxData="reduxData" :optionUpdated="optionUpdated" :contentUpdated="contentUpdated" v-if="reduxDataLoaded"></router-view>
             </transition>
             <Footer :reduxData="reduxData"></Footer>
             <FooterBtm></FooterBtm>
             <FooterPhoneFixedBar></FooterPhoneFixedBar>
-            <RightFixedBar :reduxData="reduxData" v-if="isReduxDataLoaded"></RightFixedBar>
+            <RightFixedBar :reduxData="reduxData" v-if="reduxDataLoaded"></RightFixedBar>
         </div>
 
         <div id="app_collapse_menu_mask" v-show="showCollapseMenuMask" @click="hideCollapseMenu"></div>
@@ -48,13 +55,19 @@
                 optionUpdated: false,
                 contentUpdated: false,
                 reduxData: {},
-                isReduxDataLoaded: false,
+                reduxDataLoaded: false,
                 showCollapseMenuMask: false,
                 collapseMenuClass: '',
                 appWrapperSlideClass: ''
             };
         },
         computed: {
+            appLoadingStyle () {
+                let windowHeight = window.innerHeight;
+                return {
+                    marginTop: (windowHeight-156)/2+'px'
+                };
+            },
             isNotIndexRoute () {
                 if (this.$route.name === 'Index') {
                     return false;
@@ -101,16 +114,16 @@
                 // if (this.optionUpdated) {
                 //     this.$axios.get('/data/json-cors.php?file=redux_options.json').then( (response) => {
                 //         this.reduxData = response.data;
-                //         this.isReduxDataLoaded = true;
+                //         this.reduxDataLoaded = true;
                 //
                 //         localStorage.reduxData = JSON.stringify(this.reduxData);
                 //     });
                 // } else {
                 //     this.reduxData = JSON.parse(localStorage.reduxData);
-                //     this.isReduxDataLoaded = true;
+                //     this.reduxDataLoaded = true;
                 // }
 
-                this.$getDataFromServerOrCache('/data/json-cors.php?file=redux_options.json','reduxData','reduxData',this.optionUpdated,'isReduxDataLoaded',false,null,null);
+                this.$getDataFromServerOrCache('/data/json-cors.php?file=redux_options.json','reduxData','reduxData',this.optionUpdated,'reduxDataLoaded',false,null,null);
 
             },
             showCollapseMenu () {
@@ -162,5 +175,7 @@
 </script>
 
 <style lang="less">
-
+    .app_loading_el {
+        height: 100px;
+    }
 </style>

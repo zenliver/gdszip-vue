@@ -56,15 +56,15 @@
                     </div>
                     <div class="index_service_content link_hover">
                         <div class="row">
-                            <div class="col-md-4 col-sm-4" v-for="serviceCateLv1 in serviceCatesLv1">
+                            <div class="col-md-4 col-sm-4" v-for="serviceCateLv2 in serviceCatesLv2">
                                 <div class="index_service_item">
                                     <div class="index_service_item_icon">
-                                        <img :src="serviceCateLv1.acf.cate_img" alt="" class="img-responsive">
+                                        <img :src="serviceCateLv2.acf.cate_img" alt="" class="img-responsive">
                                     </div>
                                     <div class="index_service_item_title">
-                                        <router-link :to="{ name: 'PostCate', params: {catelv1id: 1, cateid: serviceCateLv1.id} }">{{serviceCateLv1.name}}</router-link>
+                                        <router-link :to="{ name: 'PostCate', params: {catelv1id: 1, cateid: serviceCateLv2.id} }">{{serviceCateLv2.name}}</router-link>
                                     </div>
-                                    <IndexServiceList :serviceCateId="serviceCateLv1.id" :optionUpdated="optionUpdated"></IndexServiceList>
+                                    <IndexServiceList :serviceCateId="serviceCateLv2.id" :optionUpdated="optionUpdated"></IndexServiceList>
                                 </div>
                             </div>
                         </div>
@@ -180,7 +180,7 @@
                     </div>
                     <div class="index_info_content link_hover">
                         <div class="row">
-                            <div class="col-md-4 col-sm-6" v-for="infoItem in infoCatesLv1">
+                            <div class="col-md-4 col-sm-6" v-for="infoItem in infoCatesLv2">
                                 <div class="index_info_item">
                                     <div class="mod_info_panel">
                                         <div class="mod_info_panel_head">
@@ -302,12 +302,12 @@
                         prevEl: '#index_honor .swiper-button-prev'
                     }
                 },
-                serviceCatesLv1: [],
+                serviceCatesLv2: [],
                 isAdvantageDataLoaded: false,
                 advantageData: {},
                 isHonorDataLoaded: false,
                 honorData: {},
-                infoCatesLv1: []
+                infoCatesLv2: []
             };
         },
         computed: {
@@ -341,42 +341,42 @@
             }
         },
         methods: {
-            getServiceCatesLv1Data () {
-                let getServiceCatesLv1 = () => {
+            getServiceCatesLv2Data () {
+                let getServiceCatesLv2 = () => {
                     this.$axios.get('/wp-json/wp/v2/categories/?fields=id,name,acf&orderby=id&parent=1').then( (response) => {
-                        this.serviceCatesLv1 = response.data;
+                        this.serviceCatesLv2 = response.data;
 
-                        localStorage.serviceCatesLv1 = JSON.stringify(this.serviceCatesLv1);
+                        localStorage.serviceCatesLv2 = JSON.stringify(this.serviceCatesLv2);
                     });
                 }
 
                 if (this.optionUpdated) {
-                    getServiceCatesLv1();
+                    getServiceCatesLv2();
                 } else {
-                    if (localStorage.serviceCatesLv1 === undefined) {
-                        getServiceCatesLv1();
+                    if (localStorage.serviceCatesLv2 === undefined) {
+                        getServiceCatesLv2();
                     } else {
-                        this.serviceCatesLv1 = JSON.parse(localStorage.serviceCatesLv1);
+                        this.serviceCatesLv2 = JSON.parse(localStorage.serviceCatesLv2);
                     }
                 }
 
             },
-            getInfoCatesLv1Data () {
-                let getInfoCatesLv1 = () => {
+            getInfoCatesLv2Data () {
+                let getInfoCatesLv2 = () => {
                     this.$axios.get('/wp-json/wp/v2/categories/?fields=id,name&orderby=id&parent=4').then( (response) => {
-                        this.infoCatesLv1 = response.data;
+                        this.infoCatesLv2 = response.data;
 
-                        localStorage.infoCatesLv1 = JSON.stringify(this.infoCatesLv1);
+                        localStorage.infoCatesLv2 = JSON.stringify(this.infoCatesLv2);
                     });
                 }
 
                 if (this.optionUpdated) {
-                    getInfoCatesLv1();
+                    getInfoCatesLv2();
                 } else {
-                    if (localStorage.infoCatesLv1 === undefined) {
-                        getInfoCatesLv1();
+                    if (localStorage.infoCatesLv2 === undefined) {
+                        getInfoCatesLv2();
                     } else {
-                        this.infoCatesLv1 = JSON.parse(localStorage.infoCatesLv1);
+                        this.infoCatesLv2 = JSON.parse(localStorage.infoCatesLv2);
                     }
                 }
 
@@ -396,7 +396,7 @@
 
             document.title = '深圳知识产权律师_商标专利律师'+this.$baseTitle;
 
-            this.getServiceCatesLv1Data();
+            this.getServiceCatesLv2Data();
 
             this.getAdvantageData();
 
@@ -405,7 +405,7 @@
                 this.isHonorDataLoaded = true;
             });
 
-            this.getInfoCatesLv1Data();
+            this.getInfoCatesLv2Data();
 
         },
         mounted () {

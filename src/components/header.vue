@@ -31,7 +31,7 @@
                         <li class="dropdown">
                             <router-link :to="{ name: 'PostCate', params: {catelv1id: 1, cateid: 1} }" class="dropdown-toggle">服务项目</router-link>
                             <ul class="dropdown-menu lv2">
-                                <li class="dropdown lv2" v-for="serviceCate in serviceCatesLv1Data">
+                                <li class="dropdown lv2" v-for="serviceCate in serviceCatesLv2Data">
                                     <router-link :to="{ name: 'PostCate', params: {catelv1id: 1, cateid: serviceCate.id} }" class="dropdown-toggle">{{serviceCate.name}}</router-link>
                                     <HeaderNavbarServiceCatesLv3 :parentCateId="serviceCate.id" :optionUpdated="optionUpdated"></HeaderNavbarServiceCatesLv3>
                                 </li>
@@ -46,7 +46,7 @@
                         <li class="dropdown">
                             <router-link :to="{ name: 'PostCate', params: {catelv1id: 4, cateid: 4} }" class="dropdown-toggle">法律知识</router-link>
                             <ul class="dropdown-menu lv2">
-                                <li v-for="infoCate in infoCatesLv1Data">
+                                <li v-for="infoCate in infoCatesLv2Data">
                                     <router-link :to="{ name: 'PostCate', params: {catelv1id: 4, cateid: infoCate.id} }">{{infoCate.name}}</router-link>
                                 </li>
                             </ul>
@@ -79,24 +79,24 @@
         },
         data () {
             return {
-                infoCatesLv1Data: [],
-                serviceCatesLv1Data: [],
+                infoCatesLv2Data: [],
+                serviceCatesLv2Data: [],
             };
         },
         methods: {
-            getInfoCatesLv1Data () {
-                this.$getDataFromServerOrCache('/wp-json/wp/v2/categories/?fields=id,name&orderby=id&parent=4','infoCatesLv1Data','infoCatesLv1',this.optionUpdated,null,false,null,null);
+            getInfoCatesLv2Data () {
+                this.$getDataFromServerOrCache('/wp-json/wp/v2/categories/?fields=id,name&orderby=id&parent=4','infoCatesLv2Data','infoCatesLv2',this.optionUpdated,null,false,null,null);
             },
-            getServiceCatesLv1Data () {
-                this.$getDataFromServerOrCache('/wp-json/wp/v2/categories/?fields=id,name,acf&orderby=id&parent=1','serviceCatesLv1Data','serviceCatesLv1',this.optionUpdated,null,false,null,null);
+            getServiceCatesLv2Data () {
+                this.$getDataFromServerOrCache('/wp-json/wp/v2/categories/?fields=id,name,acf&orderby=id&parent=1','serviceCatesLv2Data','serviceCatesLv2',this.optionUpdated,null,false,null,null);
             },
             emitClickEvent () {
                 this.$emit('toggleButtonClicked');
             }
         },
         created () {
-            this.getServiceCatesLv1Data();
-            this.getInfoCatesLv1Data();
+            this.getServiceCatesLv2Data();
+            this.getInfoCatesLv2Data();
         },
     }
 </script>

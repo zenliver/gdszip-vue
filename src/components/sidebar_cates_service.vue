@@ -39,7 +39,7 @@
             }
         },
         created () {
-            this.$getDataFromServerOrCache('/wp-json/wp/v2/categories/?fields=id,name,acf&orderby=id&parent='+this.routeCateLv1Id,'cateLv1List','serviceCatesLv1',this.optionUpdated,null,false,null,null);
+            this.$getDataFromServerOrCache('/wp-json/wp/v2/categories/?fields=id,name,acf&orderby=id&parent='+this.routeCateLv1Id,'cateLv1List','serviceCatesLv2',this.optionUpdated,null,false,null,null);
         }
     }
 </script>

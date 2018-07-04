@@ -1,10 +1,13 @@
 CACHE MANIFEST
-# version: 1.8
+# version: 1.9
 
 CACHE:
 ./img/logo.6fb5270.png
 ./img/footer_weixin_qrcode.a0faa3f.jpg
 ./images/banner_inner.jpg
+https://www.gdszip.com/wp-content/uploads/2017/12/index_banner1.jpg
+http://www.gdszip.com/wp-content/uploads/2018/01/index_banner2_old.jpg
+https://www.gdszip.com/wp-content/uploads/2017/12/index_head.jpg
 
 FALLBACK:
 

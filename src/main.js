@@ -53,9 +53,9 @@ import 'nprogress/nprogress.css';
 NProgress.configure({minimum: 0.1,ease:'ease',speed:200,trickleSpeed: 200});
 Vue.prototype.$nprogress = NProgress;
 
-// import { Loading } from 'element-ui';
-// import 'element-ui/lib/theme-chalk/loading.css';
-// Vue.use(Loading);
+import { Loading } from 'element-ui';
+import 'element-ui/lib/theme-chalk/loading.css';
+Vue.use(Loading);
 
 // axios
 import axios from 'axios';
@@ -66,7 +66,7 @@ var requestNum = 0;
 axios.interceptors.request.use(function (config) {
         // 在发送请求之前做些什么
         // console.log(config);
-        if (config.url.indexOf('redux_options') < 0) {
+        if (config.url.indexOf('appdataver') < 0 && config.url.indexOf('redux_options') < 0) {
             requestNum++;
             NProgress.start();
 
@@ -86,7 +86,7 @@ axios.interceptors.request.use(function (config) {
 axios.interceptors.response.use(function (response) {
         // 对响应数据做点什么
         // console.log(response);
-        if (response.config.url.indexOf('redux_options') < 0) {
+        if (response.config.url.indexOf('appdataver') < 0 && response.config.url.indexOf('redux_options') < 0) {
             requestNum--;
         }
         // console.log(requestNum);

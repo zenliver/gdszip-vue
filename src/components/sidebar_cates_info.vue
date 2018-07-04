@@ -4,7 +4,7 @@
             <div class="mod_info_panel_head">法律知识</div>
             <div class="mod_info_panel_body">
                 <ul class="sidebar_cates_lv2_list clearfix">
-                    <li v-for="cateLv1Item in infoCatesLv1">
+                    <li v-for="cateLv1Item in infoCatesLv2">
                         <router-link :to="{ name: 'PostCate', params: {catelv1id: routeCateLv1Id, cateid: cateLv1Item.id} }">{{cateLv1Item.name}}</router-link>
                     </li>
                 </ul>
@@ -22,7 +22,7 @@
         },
         data () {
             return {
-                infoCatesLv1: []
+                infoCatesLv2: []
             };
         },
         computed: {
@@ -31,22 +31,22 @@
             }
         },
         methods: {
-            getInfoCatesLv1Data () {
-                let getInfoCatesLv1 = () => {
+            getInfoCatesLv2Data () {
+                let getInfoCatesLv2 = () => {
                     this.$axios.get('/wp-json/wp/v2/categories/?fields=id,name&orderby=id&parent='+this.routeCateLv1Id).then( (response) => {
-                        this.infoCatesLv1 = response.data;
+                        this.infoCatesLv2 = response.data;
 
-                        localStorage.infoCatesLv1 = JSON.stringify(this.infoCatesLv1);
+                        localStorage.infoCatesLv2 = JSON.stringify(this.infoCatesLv2);
                     });
                 }
 
                 if (this.optionUpdated) {
-                    getInfoCatesLv1();
+                    getInfoCatesLv2();
                 } else {
-                    if (localStorage.infoCatesLv1 === undefined) {
-                        getInfoCatesLv1();
+                    if (localStorage.infoCatesLv2 === undefined) {
+                        getInfoCatesLv2();
                     } else {
-                        this.infoCatesLv1 = JSON.parse(localStorage.infoCatesLv1);
+                        this.infoCatesLv2 = JSON.parse(localStorage.infoCatesLv2);
                     }
                 }
 
@@ -54,7 +54,7 @@
 
         },
         created () {
-            this.getInfoCatesLv1Data();
+            this.getInfoCatesLv2Data();
         }
     }
 </script>
