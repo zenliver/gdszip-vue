@@ -12,7 +12,7 @@
                         <span class="icon-bar"></span>
                     </button>
                 </div>
-                <div id="collapse-menu" class="collapse navbar-collapse">
+                <div id="collapse-menu" class="collapse navbar-collapse" v-if="isNotPhone">
                     <ul class="nav navbar-nav pull-right">
                         <li>
                             <router-link :to="{ name: 'Index', params: {} }">网站首页</router-link>
@@ -83,6 +83,16 @@
                 serviceCatesLv2Data: [],
             };
         },
+        computed: {
+            isNotPhone () {
+                let windowWidth = window.innerWidth;
+                if (windowWidth < 768) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        },
         methods: {
             getInfoCatesLv2Data () {
                 this.$getDataFromServerOrCache('/wp-json/wp/v2/categories/?fields=id,name&orderby=id&parent=4','infoCatesLv2Data','infoCatesLv2',this.optionUpdated,null,false,null,null);
@@ -95,8 +105,10 @@
             }
         },
         created () {
-            this.getServiceCatesLv2Data();
-            this.getInfoCatesLv2Data();
+            if (this.isNotPhone) {
+                this.getServiceCatesLv2Data();
+                this.getInfoCatesLv2Data();
+            }
         },
     }
 </script>

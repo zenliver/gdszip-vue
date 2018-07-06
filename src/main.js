@@ -217,6 +217,14 @@ Vue.prototype.$getDataFromServerOrCache = function (apiUrl,dataKey,storageKey,up
     }
 };
 
+
+// 应用缓存更新事件处理
+window.applicationCache.onupdateready = function () {
+    alert('APP已更新，页面将自动刷新以使用最新版。');
+    window.location.reload();
+}
+
+
 Vue.config.productionTip = false;
 
 /* eslint-disable no-new */

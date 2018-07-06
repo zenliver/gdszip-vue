@@ -5,7 +5,8 @@
             <div class="app_loading_logo">
                 <img src="./assets/images/logo.png" alt="" class="img-responsive">
             </div>
-            <div class="app_loading_el" v-loading="true" element-loading-text="加载中..." element-loading-background="#f1f1f1"></div>
+            <div class="app_loading_el" v-loading="true" element-loading-text="加载中..." element-loading-background="#f1f1f1" v-if="!showLoadingError"></div>
+            <div class="app_loading_error text-center" v-if="showLoadingError">😥抱歉，服务器连接失败，请稍后再试。</div>
         </div>
 
         <div id="app_wrapper" :class="appWrapperSlideClass" @animationend="removeAnimationClass" v-if="reduxDataLoaded">
@@ -15,10 +16,10 @@
             <transition name="fade">
                 <router-view :reduxData="reduxData" :optionUpdated="optionUpdated" :contentUpdated="contentUpdated" v-if="reduxDataLoaded"></router-view>
             </transition>
-            <Footer :reduxData="reduxData"></Footer>
-            <FooterBtm></FooterBtm>
-            <FooterPhoneFixedBar></FooterPhoneFixedBar>
-            <RightFixedBar :reduxData="reduxData" v-if="reduxDataLoaded"></RightFixedBar>
+            <Footer :reduxData="reduxData" v-if="isNotPhone"></Footer>
+            <FooterBtm v-if="isNotPhone"></FooterBtm>
+            <FooterPhoneFixedBar v-if="!isNotPhone"></FooterPhoneFixedBar>
+            <RightFixedBar :reduxData="reduxData" v-if="reduxDataLoaded && isNotPhone"></RightFixedBar>
         </div>
 
         <div id="app_collapse_menu_mask" v-show="showCollapseMenuMask" @click="hideCollapseMenu"></div>
@@ -58,7 +59,8 @@
                 reduxDataLoaded: false,
                 showCollapseMenuMask: false,
                 collapseMenuClass: '',
-                appWrapperSlideClass: ''
+                appWrapperSlideClass: '',
+                showLoadingError: false
             };
         },
         computed: {
@@ -70,6 +72,14 @@
             },
             isNotIndexRoute () {
                 if (this.$route.name === 'Index') {
+                    return false;
+                } else {
+                    return true;
+                }
+            },
+            isNotPhone () {
+                let windowWidth = window.innerWidth;
+                if (windowWidth < 768) {
                     return false;
                 } else {
                     return true;
@@ -107,6 +117,8 @@
 
                     this.getReduxData();
 
+                }).catch( (error) => {
+                    this.showLoadingError = true;
                 });
             },
             getReduxData () {
@@ -177,5 +189,10 @@
 <style lang="less">
     .app_loading_el {
         height: 100px;
+    }
+    .app_loading_error {
+        padding-top: 30px;
+        padding-bottom: 30px;
+        font-size: 16px;
     }
 </style>
