@@ -3,9 +3,15 @@
         <div class="navbar">
             <div class="container">
                 <div class="navbar-header">
-                    <router-link :to="{ name: 'Index' }" class="navbar-brand">
+                    <router-link :to="{ name: 'Index' }" class="navbar-brand" v-if="!$store.getters.isPhone">
                         <img src="./../assets/images/logo.png" alt="">
                     </router-link>
+                    <div class="phone_back" v-if="$store.getters.isPhone">
+                        <span class="phone_back_icon" @click="goBack">
+                            <i class="fa fa-arrow-left"></i>
+                        </span>
+                        <span class="phone_back_title">{{phoneTitle}}</span>
+                    </div>
                     <button type="button" name="button" class="navbar-toggle" @click="emitClickEvent">
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -75,6 +81,12 @@
         props: {
             optionUpdated: {
                 type: Boolean
+            },
+            phoneCateName: {
+                type: String
+            },
+            phonePageTitle: {
+                type: String
             }
         },
         data () {
@@ -91,6 +103,22 @@
                 } else {
                     return true;
                 }
+            },
+            routeName () {
+                return this.$route.name;
+            },
+            phoneTitle () {
+                if (this.routeName === 'Index') {
+                    return '首页';
+                } else if (this.routeName === 'PostCate' || this.routeName === 'PostCatePagi') {
+                    return this.phoneCateName;
+                } else if (this.routeName === 'PostDetail') {
+                    return '文章详情';
+                } else if (this.routeName === 'Page') {
+                    return this.phonePageTitle;
+                } else {
+                    return '出错啦';
+                }
             }
         },
         methods: {
@@ -102,6 +130,9 @@
             },
             emitClickEvent () {
                 this.$emit('toggleButtonClicked');
+            },
+            goBack () {
+                history.back();
             }
         },
         created () {

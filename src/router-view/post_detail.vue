@@ -5,7 +5,7 @@
             <div class="container">
                 <div class="page_breadcrumb">
                     <span class="breadcrumb_home">
-                        <a href="#/">网站首页</a>
+                        <a href="#/">首页</a>
                     </span>
                     <span class="breadcrumb_nav" v-if="hasSubCate">
                         <router-link :to="{ name: 'PostCate', params: {catelv1id: routeCateLv1Id, cateid: routeCateLv1Id} }">{{breadcrumbCateLv1Name}}</router-link>
@@ -28,8 +28,8 @@
                         </div>
                         <div class="col-md-9 col-sm-8">
                             <div class="content">
-                                <div class="content_detail">
-                                    <div class="article_detail" v-if="isPostDataLoaded">
+                                <div class="content_detail" v-loading="!postDataLoaded" element-loading-text="加载中...">
+                                    <div class="article_detail" v-if="postDataLoaded">
                                         <div class="article_detail_head" v-if="isCateLikeInfo">
                                             <h1 class="article_detail_title">{{postData.title.rendered}}</h1>
                                             <div class="article_detail_info">
@@ -46,7 +46,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <PostDetailRelated :cateId="postData.categories[0]" v-if="isPostDataLoaded"></PostDetailRelated>
+                            <PostDetailRelated :cateId="postData.categories[0]" v-if="postDataLoaded"></PostDetailRelated>
                         </div>
                     </div>
                 </div>
@@ -76,7 +76,7 @@
         },
         data () {
             return {
-                isPostDataLoaded: false,
+                postDataLoaded: false,
                 postData: {},
                 isBreadcrumbCateLv1DataLoaded: false,
                 breadcrumbCateLv1Data: {},
@@ -123,7 +123,7 @@
                 }
             },
             breadcrumbTitle () {
-                if (this.isPostDataLoaded === true) {
+                if (this.postDataLoaded === true) {
                     return this.postData.title.rendered;
                 } else {
                     return '--';
@@ -146,9 +146,10 @@
         },
         methods: {
             getPostData () {
+                this.postDataLoaded = false;
                 this.$axios.get('/wp-json/wp/v2/posts/'+this.routePostId+'?fields=id,date,title,content,categories,acf').then( (response) => {
                     this.postData = response.data;
-                    this.isPostDataLoaded = true;
+                    this.postDataLoaded = true;
 
                     document.title = this.postData.title.rendered+this.$baseTitle;
                 });

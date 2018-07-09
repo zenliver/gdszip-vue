@@ -8,23 +8,8 @@
                 <router-link :to="{ name: 'Page', params: {id: 24} }" class="btn_hover">广和律所介绍</router-link>
             </li>
         </ul>
-        <!-- <ul class="content_page_nav clearfix" v-if="isPageAboutExact">
-            <li class="active">
-                <router-link :to="{ name: 'Page', params: {id: pageData.id} }" class="btn_hover">{{pageData.title.rendered}}</router-link>
-            </li>
-            <li>
-                <router-link :to="{ name: 'Page', params: {id: 24} }" class="btn_hover">广和律所介绍</router-link>
-            </li>
-        </ul>
-        <ul class="content_page_nav clearfix" v-else>
-            <li>
-                <router-link :to="{ name: 'Page', params: {id: 22} }" class="btn_hover">吴彬律师介绍</router-link>
-            </li>
-            <li class="active">
-                <router-link :to="{ name: 'Page', params: {id: pageData.id} }" class="btn_hover">{{pageData.title.rendered}}</router-link>
-            </li>
-        </ul> -->
-        <div class="content_page_detail" v-html="pageData.content.rendered" v-if="isPageDataLoaded">
+        <VueElementLoading v-if="!pageDataLoaded"></VueElementLoading>
+        <div class="content_page_detail" v-html="pageData.content.rendered" v-if="pageDataLoaded">
         </div>
     </div>
 </template>
@@ -38,7 +23,7 @@
         },
         data () {
             return {
-                isPageDataLoaded: false,
+                pageDataLoaded: false,
                 pageData: {}
             };
         },
@@ -71,18 +56,10 @@
         methods: {
             getData () {
 
-                // this.isPageDataLoaded = false;
-                // this.$axios.get('/wp-json/wp/v2/pages/'+this.routeId+'?fields=id,title,content').then( (response) => {
-                //     this.pageData = response.data;
-                //     this.isPageDataLoaded = true;
-                //
-                //     this.$emit('pageDataLoaded',this.pageData.title.rendered);
-                // });
-
                 let afterGetFunc = () => {
                     this.$emit('pageDataLoaded',this.pageData.title.rendered);
                 }
-                this.$getDataFromServerOrCache('/wp-json/wp/v2/pages/'+this.routeId+'?fields=id,title,content','pageData','pageData'+this.routeId,this.contentUpdated,'isPageDataLoaded',false,null,afterGetFunc);
+                this.$getDataFromServerOrCache('/wp-json/wp/v2/pages/'+this.routeId+'?fields=id,title,content','pageData','pageData'+this.routeId,this.contentUpdated,'pageDataLoaded',true,null,afterGetFunc);
 
             }
         },

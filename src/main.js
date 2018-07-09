@@ -1,8 +1,9 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue';
-import App from './App';
+import App from './App.vue';
 import router from './router/router.js';
+import store from './vuex/store.js';
 
 import './assets/css/libs/bootstrap.min.css';
 import './assets/css/libs/font-awesome.min.css';
@@ -50,12 +51,21 @@ Vue.use(BaiduMap, {
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 // NProgress全局配置
-NProgress.configure({minimum: 0.1,ease:'ease',speed:200,trickleSpeed: 200});
+NProgress.configure({
+    minimum: 0.1,
+    ease: 'ease',
+    speed: 200,
+    trickleSpeed: 200,
+    showSpinner: false
+});
 Vue.prototype.$nprogress = NProgress;
 
 import { Loading } from 'element-ui';
 import 'element-ui/lib/theme-chalk/loading.css';
 Vue.use(Loading);
+
+import VueElementLoading from './components/common/VueElementLoading.vue';
+Vue.component('VueElementLoading',VueElementLoading);
 
 // axios
 import axios from 'axios';
@@ -218,12 +228,14 @@ Vue.prototype.$getDataFromServerOrCache = function (apiUrl,dataKey,storageKey,up
 };
 
 
+
 Vue.config.productionTip = false;
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })

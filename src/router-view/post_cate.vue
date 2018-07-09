@@ -5,7 +5,7 @@
             <div class="container">
                 <div class="page_breadcrumb">
                     <span class="breadcrumb_home">
-                        <a href="#/">网站首页</a>
+                        <a href="#/">首页</a>
                     </span>
                     <span class="breadcrumb_nav" v-if="isSubCate">
                         <router-link :to="{ name: 'PostCate', params: {catelv1id: routeCateLv1Id, cateid: routeCateLv1Id} }">{{breadcrumbCateLv1Name}}</router-link>
@@ -118,29 +118,15 @@
         methods: {
             getBreadcrumbCateLv1Data () {
 
-                // this.$axios.get('/wp-json/wp/v2/categories/'+this.routeCateLv1Id+'/?fields=id,name').then( (response) => {
-                //     this.breadcrumbCateLv1Data = response.data;
-                //     this.isBreadcrumbCateLv1DataLoaded = true;
-                // });
-
                 this.$getDataFromServerOrCache('/wp-json/wp/v2/categories/'+this.routeCateLv1Id+'/?fields=id,name','breadcrumbCateLv1Data','categoryData'+this.routeCateLv1Id,this.optionUpdated,'isBreadcrumbCateLv1DataLoaded',false,null,null);
 
             },
             getBreadcrumbCateData () {
 
-                // this.isBreadcrumbCateDataLoaded = false;
-                // this.$axios.get('/wp-json/wp/v2/categories/'+this.routeCateId+'/?fields=id,name').then( (response) => {
-                //     this.breadcrumbCateData = response.data;
-                //     this.isBreadcrumbCateDataLoaded = true;
-                //
-                //     document.title = this.breadcrumbCateData.name+this.$baseTitle;
-                // });
-
-                // let beforeGetFunc = () => {
-                //     this.isBreadcrumbCateDataLoaded = false;
-                // }
                 let afterGetFunc = () => {
                     document.title = this.breadcrumbCateData.name+this.$baseTitle;
+
+                    this.$emit('cateDataLoaded',this.breadcrumbCateData.name);
                 }
                 this.$getDataFromServerOrCache('/wp-json/wp/v2/categories/'+this.routeCateId+'/?fields=id,name','breadcrumbCateData','categoryData'+this.routeCateId,this.optionUpdated,'isBreadcrumbCateDataLoaded',true,null,afterGetFunc);
 

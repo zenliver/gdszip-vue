@@ -5,7 +5,7 @@
             <div class="container">
                 <div class="page_breadcrumb">
                     <span class="breadcrumb_home">
-                        <a href="#/">网站首页</a>
+                        <a href="#/">首页</a>
                     </span>
                     <span class="breadcrumb_nav active">{{pageTitle}}</span>
                 </div>
@@ -81,6 +81,8 @@
                 this.pageTitle = title;
 
                 document.title = this.pageTitle+this.$baseTitle;
+
+                this.$emit('pageTitleLoaded',this.pageTitle);
             }
         },
         watch: {

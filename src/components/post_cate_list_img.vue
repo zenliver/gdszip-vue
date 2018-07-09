@@ -1,6 +1,7 @@
 <template lang="html">
     <div class="content_list_imgtxt">
-        <div class="article_list article_list_honor link_hover">
+        <VueElementLoading v-if="!postListLoaded"></VueElementLoading>
+        <div class="article_list article_list_honor link_hover" v-if="postListLoaded">
             <div class="row">
                 <div class="col-md-4 col-sm-4 col-xs-6" v-for="postItem in postList.posts">
                     <div class="article_item">
@@ -18,7 +19,7 @@
 
         </div>
         <div class="mod_pagination">
-            <paginate :page-count="postList.pages" :click-handler="getPagiPostsData" :prev-text="'&lt;'" :next-text="'&gt;'" :container-class="'pagination'" v-if="isPostListLoaded"></paginate>
+            <paginate :page-count="postList.pages" :initial-page="paginateInitialPageNum" :click-handler="getPagiPostsData" :prev-text="'&lt;'" :next-text="'&gt;'" :container-class="'pagination'" v-if="postListLoaded"></paginate>
         </div>
     </div>
 </template>
@@ -28,9 +29,10 @@
         data () {
             return {
                 apiBase: '/json-api/get_category_posts/?include=id,title,categories,thumbnail&count=6&id=',
-                isPostListLoaded: false,
+                postListLoaded: false,
                 postList: {},
-                pagiNum: 1
+                pagiNum: 1,
+                paginateInitialPageNum: 0
             };
         },
         computed: {
@@ -46,14 +48,19 @@
         },
         methods: {
             getPostsData () {
+                this.postListLoaded = false;
                 this.$axios.get(this.apiUrl).then( (response) => {
                     this.postList = response.data;
-                    this.isPostListLoaded = true;
+                    this.postListLoaded = true;
                 });
             },
             getPagiPostsData (clickedPageNum) {
+
                 // 设置新页码
                 this.pagiNum = clickedPageNum;
+
+                this.paginateInitialPageNum = clickedPageNum-1;
+
                 // 重新获取分页数据
                 this.getPostsData();
             }

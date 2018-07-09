@@ -5,16 +5,16 @@
             <div class="app_loading_logo">
                 <img src="./assets/images/logo.png" alt="" class="img-responsive">
             </div>
-            <div class="app_loading_el" v-loading="true" element-loading-text="加载中..." element-loading-background="#f1f1f1" v-if="!showLoadingError"></div>
+            <VueElementLoading :height="'100px'" :bg="'#f1f1f1'" v-if="!showLoadingError"></VueElementLoading>
             <div class="app_loading_error text-center" v-if="showLoadingError">😥抱歉，服务器连接失败，请稍后再试。</div>
         </div>
 
         <div id="app_wrapper" :class="appWrapperSlideClass" @animationend="removeAnimationClass" v-if="reduxDataLoaded">
-            <Header :optionUpdated="optionUpdated" @toggleButtonClicked="showCollapseMenu"></Header>
+            <Header :optionUpdated="optionUpdated" :phoneCateName="headerPhoneCateName" :phonePageTitle="headerPhonePageTitle" @toggleButtonClicked="showCollapseMenu"></Header>
             <div id="header_placeholder"></div>
             <BannerInner v-if="isNotIndexRoute"></BannerInner>
             <transition name="fade">
-                <router-view :reduxData="reduxData" :optionUpdated="optionUpdated" :contentUpdated="contentUpdated" v-if="reduxDataLoaded"></router-view>
+                <router-view :reduxData="reduxData" :optionUpdated="optionUpdated" :contentUpdated="contentUpdated" @cateDataLoaded="recieveCateName" @pageTitleLoaded="recievePageTitle" v-if="reduxDataLoaded"></router-view>
             </transition>
             <Footer :reduxData="reduxData" v-if="isNotPhone"></Footer>
             <FooterBtm v-if="isNotPhone"></FooterBtm>
@@ -60,7 +60,9 @@
                 showCollapseMenuMask: false,
                 collapseMenuClass: '',
                 appWrapperSlideClass: '',
-                showLoadingError: false
+                showLoadingError: false,
+                headerPhoneCateName: '',
+                headerPhonePageTitle: ''
             };
         },
         computed: {
@@ -172,6 +174,12 @@
                 this.showCollapseMenuMask = false;
                 this.collapseMenuClass = 'slide_out';
                 this.appWrapperSlideClass = 'slide_left';
+            },
+            recieveCateName (cateName) {
+                this.headerPhoneCateName = cateName;
+            },
+            recievePageTitle (pageTitle) {
+                this.headerPhonePageTitle = pageTitle;
             }
         },
         created () {
@@ -187,9 +195,6 @@
 </script>
 
 <style lang="less">
-    .app_loading_el {
-        height: 100px;
-    }
     .app_loading_error {
         padding-top: 30px;
         padding-bottom: 30px;

@@ -5,6 +5,8 @@
             <div class="mod_info_panel_body">
                 <div class="article_detail_related">
                     <ul class="article_detail_related_list mod_info_panel_list info_list has_symbol clearfix">
+                        <li v-if="!relatedPostsLoaded">加载中...</li>
+                        <li v-if="noRelatedPosts">暂无</li>
                         <li v-for="relatedPost in relatedPosts">
                             <router-link :to="{ name: 'PostDetail', params: {catelv1id: routeCateLv1Id, postid: relatedPost.id} }">{{relatedPost.title.rendered}}</router-link>
                         </li>
@@ -25,7 +27,9 @@
         },
         data () {
             return {
-                relatedPosts: []
+                relatedPosts: [],
+                relatedPostsLoaded: false,
+                noRelatedPosts: false
             };
         },
         computed: {
@@ -64,6 +68,11 @@
                     relatedPostsData.splice(objectIndex,1);
 
                     this.relatedPosts = relatedPostsData;
+                    this.relatedPostsLoaded = true;
+
+                    if (this.relatedPosts.length === 0) {
+                        this.noRelatedPosts = true;
+                    }
                 });
             }
         },
