@@ -187,8 +187,13 @@
         },
         watch: {
             $route () {
+
                 // this.collapseMenuClass = '';
                 // this.showCollapseMenuMask = false;
+
+                this.headerPhoneCateName = '';
+                this.headerPhonePageTitle = '';
+
             },
         }
     }

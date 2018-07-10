@@ -10,6 +10,7 @@
                         <span class="phone_back_icon" @click="goBack">
                             <i class="fa fa-arrow-left"></i>
                         </span>
+                        <VueElementLoadingSm v-if="!phoneTitleLoaded"></VueElementLoadingSm>
                         <span class="phone_back_title">{{phoneTitle}}</span>
                     </div>
                     <button type="button" name="button" class="navbar-toggle" @click="emitClickEvent">
@@ -118,6 +119,13 @@
                     return this.phonePageTitle;
                 } else {
                     return '出错啦';
+                }
+            },
+            phoneTitleLoaded () {
+                if (this.phoneTitle === '') {
+                    return false;
+                } else {
+                    return true;
                 }
             }
         },

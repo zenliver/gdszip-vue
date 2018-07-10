@@ -67,6 +67,9 @@ Vue.use(Loading);
 import VueElementLoading from './components/common/VueElementLoading.vue';
 Vue.component('VueElementLoading',VueElementLoading);
 
+import VueElementLoadingSm from './components/common/VueElementLoadingSm.vue';
+Vue.component('VueElementLoadingSm',VueElementLoadingSm);
+
 // axios
 import axios from 'axios';
 axios.defaults.baseURL = 'https://www.gdszip.com';
