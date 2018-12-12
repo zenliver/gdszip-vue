@@ -1,6 +1,6 @@
 <template lang="html">
     <div class="content_list_imgtxt">
-        <PostCateListImgtxtSkeleton v-if="!isPostListLoaded"></PostCateListImgtxtSkeleton>
+        <PostCateListImgtxtSkeleton v-if="!postListLoaded"></PostCateListImgtxtSkeleton>
         <div class="article_list link_hover" v-else>
             <div class="article_item" v-for="postItem in postList.posts">
                 <div class="row">
@@ -23,7 +23,7 @@
             </div>
         </div>
         <div class="mod_pagination">
-            <paginate :page-count="postList.pages" :initial-page="paginateInitialPageNum" :click-handler="changeRoute" :prev-text="'&lt;'" :next-text="'&gt;'" :container-class="'pagination'" v-if="isPostListLoaded"></paginate>
+            <paginate :page-count="postList.pages" :initial-page="paginateInitialPageNum" :click-handler="changeRoute" :prev-text="'&lt;'" :next-text="'&gt;'" :container-class="'pagination'" v-if="postListLoaded"></paginate>
         </div>
     </div>
 </template>
@@ -32,7 +32,7 @@
     export default {
         data () {
             return {
-                isPostListLoaded: false,
+                postListLoaded: false,
                 postList: {},
                 apiBase: '/json-api/get_category_posts/?include=id,title,excerpt,categories,thumbnail&id='
             };
@@ -67,11 +67,9 @@
         },
         methods: {
             getPostsData () {
-                this.isPostListLoaded = false;
-                this.$axios.get(this.apiUrl).then( (response) => {
-                    this.postList = response.data;
-                    this.isPostListLoaded = true;
-                });
+
+                this.$getData(this.apiUrl,'postList','postListLoaded',true,null,null,null,'no-dataProcessor');
+
             },
             changeRoute (clickedPageNum) { // clickedPageNum是从paginate组件回传的点击的页码
                 // console.log(clickedPageNum);
@@ -102,7 +100,7 @@
             routeName () {
                 // console.log(this.routeName);
                 if (this.routeName === 'PostCate') {
-                    this.isPostListLoaded = false;
+                    this.postListLoaded = false;
                 }
             }
         }

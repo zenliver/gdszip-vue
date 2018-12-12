@@ -48,11 +48,9 @@
         },
         methods: {
             getPostsData () {
-                this.postListLoaded = false;
-                this.$axios.get(this.apiUrl).then( (response) => {
-                    this.postList = response.data;
-                    this.postListLoaded = true;
-                });
+
+                this.$getData(this.apiUrl,'postList','postListLoaded',true,null,null,null,'no-dataProcessor');
+
             },
             getPagiPostsData (clickedPageNum) {
 

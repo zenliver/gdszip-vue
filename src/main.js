@@ -61,14 +61,22 @@ NProgress.configure({
 Vue.prototype.$nprogress = NProgress;
 
 import { Loading } from 'element-ui';
-import 'element-ui/lib/theme-chalk/loading.css';
 Vue.use(Loading);
+
+import { Swipe, SwipeItem } from 'mint-ui';
+Vue.component(Swipe.name, Swipe);
+Vue.component(SwipeItem.name, SwipeItem);
 
 import VueElementLoading from './components/common/VueElementLoading.vue';
 Vue.component('VueElementLoading',VueElementLoading);
 
 import VueElementLoadingSm from './components/common/VueElementLoadingSm.vue';
 Vue.component('VueElementLoadingSm',VueElementLoadingSm);
+
+// jquery
+import $ from 'jquery';
+Vue.prototype.$$ = $;
+Vue.prototype.apiBaseUrl = 'https://www.gdszip.com';
 
 // axios
 import axios from 'axios';
@@ -135,8 +143,18 @@ Vue.prototype.$baseTitle = '_广东知识产权律师网_吴彬律师网站';
 // 添加通用方法
 
 // 请求API数据（无缓存）
-Vue.prototype.$getData = function (apiUrl,dataKey,dataLoadedKey,setDataLoadedFalseBeforeGet,beforeGetFunc,afterGetFunc) {
+Vue.prototype.$getData = function (
+    apiUrl,
+    dataKey,
+    dataLoadedKey,
+    setDataLoadedFalseBeforeGet,
+    beforeGetFunc,
+    afterGetFunc,
+    errorHandler,
+    dataProcessor
+) {
 
+    // 获取数据前插入的操作
     if (beforeGetFunc !== null) {
         beforeGetFunc();
     }
@@ -145,24 +163,75 @@ Vue.prototype.$getData = function (apiUrl,dataKey,dataLoadedKey,setDataLoadedFal
         this[dataLoadedKey] = false;
     }
 
-    this.$axios.get(apiUrl).then( (response) => {
+    // jquery方法（兼容性好）
+    $.ajax({
+        url: this.apiBaseUrl+apiUrl,
+        type: 'GET',
+        dataType: 'json',
+    })
+    .done( (data) => {
 
-        this[dataKey] = response.data;
+        let originalData = data;
 
+        // 如果需要，对服务端返回的数据进行处理
+        if (dataProcessor !== 'no-dataProcessor') {
+            dataProcessor(originalData);
+        }
+
+        // 保存数据
+        this[dataKey] = originalData;
+
+        // 标记数据加载状态
         if (dataLoadedKey !== null) {
             this[dataLoadedKey] = true;
         }
 
+        // 服务端数据返回后插入的操作
         if (afterGetFunc !== null) {
             afterGetFunc();
         }
 
+    })
+    .fail( () => {
+        // 如果需要，添加错误处理器
+        if (errorHandler !== null) {
+            errorHandler();
+        }
+    })
+    .always(function() {
+        // console.log("complete");
     });
+
+
+    // axios方法（兼容性不好，弃用）
+    // this.$axios.get(apiUrl).then( (response) => {
+    //
+    //     this[dataKey] = response.data;
+    //
+    //     if (dataLoadedKey !== null) {
+    //         this[dataLoadedKey] = true;
+    //     }
+    //
+    //     if (afterGetFunc !== null) {
+    //         afterGetFunc();
+    //     }
+    //
+    // });
 
 }
 
+
 // 请求API数据并缓存，若存在缓存且服务端未更新则从缓存读取
-Vue.prototype.$getDataFromServerOrCache = function (apiUrl,dataKey,storageKey,updateFlag,dataLoadedKey,setDataLoadedFalseBeforeGet,beforeGetFunc,afterGetFunc) {
+Vue.prototype.$getDataFromServerOrCache = function (
+    apiUrl,
+    dataKey,
+    storageKey,
+    updateFlag,
+    dataLoadedKey,
+    setDataLoadedFalseBeforeGet,
+    beforeGetFunc,
+    afterGetFunc
+) {
 
     let getDataThenCache = () => {
 
@@ -176,10 +245,15 @@ Vue.prototype.$getDataFromServerOrCache = function (apiUrl,dataKey,storageKey,up
             this[dataLoadedKey] = false;
         }
 
-        this.$axios.get(apiUrl).then( (response) => {
-
+        // jquery方法（兼容性好）
+        $.ajax({
+            url: this.apiBaseUrl+apiUrl,
+            type: 'GET',
+            dataType: 'json',
+        })
+        .done( (data) => {
             // 保存数据
-            this[dataKey] = response.data;
+            this[dataKey] = data;
 
             // 标记数据加载状态
             if (dataLoadedKey !== null) {
@@ -192,14 +266,44 @@ Vue.prototype.$getDataFromServerOrCache = function (apiUrl,dataKey,storageKey,up
             }
 
             // 从服务端获取到数据后缓存数据
-            localStorage.setItem(storageKey, JSON.stringify(this[dataKey]) );
+            window.localStorage.setItem(storageKey, JSON.stringify(this[dataKey]) );
+
+        })
+        .fail(function() {
+            // console.log("error");
+        })
+        .always(function() {
+            // console.log("complete");
         });
+
+
+        // axios方法（兼容性不好，弃用）
+        // this.$axios.get(apiUrl).then( (response) => {
+        //
+        //     // 保存数据
+        //     this[dataKey] = response.data;
+        //
+        //     // 标记数据加载状态
+        //     if (dataLoadedKey !== null) {
+        //         this[dataLoadedKey] = true;
+        //     }
+        //
+        //     // 获取到数据后插入的操作
+        //     if (afterGetFunc !== null) {
+        //         afterGetFunc();
+        //     }
+        //
+        //     // 从服务端获取到数据后缓存数据
+        //     window.localStorage.setItem(storageKey, JSON.stringify(this[dataKey]) );
+        //
+        // });
+
     };
 
     if (updateFlag) {
         getDataThenCache();
     } else {
-        if (localStorage.getItem(storageKey) === null) {
+        if (window.localStorage.getItem(storageKey) === null) {
             getDataThenCache();
         } else {
 
@@ -214,7 +318,7 @@ Vue.prototype.$getDataFromServerOrCache = function (apiUrl,dataKey,storageKey,up
             }
 
             // 若存在缓存且服务端未更新则从缓存读取数据
-            this[dataKey] = JSON.parse(localStorage.getItem(storageKey));
+            this[dataKey] = JSON.parse(window.localStorage.getItem(storageKey));
 
             // 标记数据加载状态
             if (dataLoadedKey !== null) {
@@ -231,14 +335,62 @@ Vue.prototype.$getDataFromServerOrCache = function (apiUrl,dataKey,storageKey,up
 };
 
 
+// 提交数据
+Vue.prototype.$postData = function (
+    apiUrl,
+    postData,
+    successHandler,
+    errorHandler
+) {
+
+    $.ajax({
+        url: this.apiBaseUrl+apiUrl,
+        type: 'POST',
+        data: postData
+    })
+    .done( (data) => {
+
+        if (successHandler !== 'no-successHandler') {
+            successHandler();
+        }
+
+    })
+    .fail( () => {
+
+        if (errorHandler !== 'no-errorHandler') {
+            errorHandler();
+        }
+
+    })
+    .always(function() {
+        // console.log("complete");
+    });
+
+}
+
 
 Vue.config.productionTip = false;
 
+// cordova
+
+// document.addEventListener('deviceready', function() {
+//     new Vue({
+//         el: '#app',
+//         router,
+//         store,
+//         components: { App },
+//         template: '<App/>'
+//     });
+//     // window.navigator.splashscreen.hide()
+// }, false);
+
+
 /* eslint-disable no-new */
+
 new Vue({
-  el: '#app',
-  router,
-  store,
-  components: { App },
-  template: '<App/>'
-})
+    el: '#app',
+    router,
+    store,
+    components: { App },
+    template: '<App/>'
+});

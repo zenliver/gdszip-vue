@@ -30,16 +30,17 @@
         },
         methods: {
             getAnwserData () {
+
                 this.isAnwsered = false;
 
-                this.$axios.get('http://wp-study.local/wp-json/wp/v2/comments/?fields=id,date,content&parent='+this.parentCommentId).then( (response) => {
-                    this.anwserData = response.data;
-
+                let afterGetFunc = () => {
                     if (this.anwserData.length > 0) {
                         this.isAnwsered = true;
                     }
+                }
 
-                });
+                this.$getData('/wp-json/wp/v2/comments/?fields=id,date,content&parent='+this.parentCommentId,'anwserData',null,false,null,afterGetFunc,null,'no-dataProcessor');
+
             }
         },
         created () {

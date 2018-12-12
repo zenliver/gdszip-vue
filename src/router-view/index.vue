@@ -1,23 +1,37 @@
 <template lang="html">
     <div id="router-view">
 
-        <div id="index_banner">
-            <swiper :options="bannerSwiperOption" ref="indexBannerSwiper">
+        <!-- <div id="index_banner"> -->
+
+            <!-- <swiper :options="bannerSwiperOption" ref="indexBannerSwiper" :not-next-tick="notNextTick"> -->
                 <!-- slides -->
-                <swiper-slide v-for="(indexBannerSlide, index) in indexBannerSlides" :key="index">
+                <!-- <swiper-slide v-for="(indexBannerSlide, index) in indexBannerSlides" :key="index">
                     <a :href="indexBannerSlide.url">
                         <div class="swiper_slide_img" :style="'background-image: url('+indexBannerSlide.image+');'"></div>
                     </a>
-                </swiper-slide>
+                </swiper-slide> -->
 
                 <!-- Optional controls -->
-                <div class="swiper-pagination"  slot="pagination"></div>
+                <!-- <div class="swiper-pagination"  slot="pagination"></div>
                 <div class="swiper-button-prev" slot="button-prev"></div>
-                <div class="swiper-button-next" slot="button-next"></div>
+                <div class="swiper-button-next" slot="button-next"></div> -->
                 <!-- <div class="swiper-scrollbar"   slot="scrollbar"></div> -->
-            </swiper>
-        </div>
+            <!-- </swiper> -->
+
+        <!-- </div> -->
         <!-- index_banner end -->
+
+        <!-- 因swiper的兼容性问题，使用mint-ui的swipe组件重新实现首屏banner切换 -->
+        <div id="index_banner_new">
+            <mt-swipe :auto="3000" :speed="800">
+                <mt-swipe-item v-for="(indexBannerSlide, index) in indexBannerSlides" :key="index">
+                    <a :href="indexBannerSlide.url">
+                        <div class="mint-swipe-item-img" :style="'background-image: url('+indexBannerSlide.image+');'"></div>
+                    </a>
+                </mt-swipe-item>
+            </mt-swipe>
+        </div>
+        <!-- index_banner_new end -->
 
         <div id="index_about" class="index_block">
             <div class="container">
@@ -130,7 +144,7 @@
         </div>
         <!-- index_advantage end -->
 
-        <div id="index_honor" v-if="isHonorDataLoaded">
+        <div id="index_honor" v-if="isHonorAreaRendered">
             <div class="container">
                 <div class="index_honor">
                     <div class="mod_index_title">
@@ -232,33 +246,28 @@
         },
         data () {
             return {
+                notNextTick: true,
                 bannerSwiperOption: {
                     // observer: true,
                     // observeParents: true,
-                    // notNextTick: true,
 
                     // 默认不初始化
                     // init: false,
 
                     // slides play options
-                    autoplay: {
-                        delay: 3000,
-                        disableOnInteraction: false
-                    },
+                    autoplay: 3000,
+                    autoplayDisableOnInteraction: false,
                     loop: true,
                     speed: 800,
 
                     // pagination
-                    pagination: {
-                        el: '#index_banner .swiper-pagination',
-                        clickable: true
-                    },
+                    pagination: '#index_banner .swiper-pagination',
+                    paginationClickable: true,
 
                     // navigation arrows
-                    navigation: {
-                        nextEl: '#index_banner .swiper-button-next',
-                        prevEl: '#index_banner .swiper-button-prev'
-                    }
+                    prevButton: '#index_banner .swiper-button-prev',
+                    nextButton: '#index_banner .swiper-button-next',
+
                 },
                 honorSwiperOption: {
                     // observer: true,
@@ -283,29 +292,20 @@
                     },
 
                     // slides play options
-                    autoplay: {
-                        delay: 2000,
-                        disableOnInteraction: false
-                    },
+                    autoplay: 2000,
+                    autoplayDisableOnInteraction: false,
                     loop: true,
                     speed: 800,
 
-                    // pagination
-                    // pagination: {
-                    //     el: '#index_banner .swiper-pagination',
-                    //     clickable: true
-                    // },
-
                     // navigation arrows
-                    navigation: {
-                        nextEl: '#index_honor .swiper-button-next',
-                        prevEl: '#index_honor .swiper-button-prev'
-                    }
+                    prevButton: '#index_honor .swiper-button-prev',
+                    nextButton: '#index_honor .swiper-button-next',
+
                 },
                 serviceCatesLv2: [],
                 isAdvantageDataLoaded: false,
                 advantageData: {},
-                isHonorDataLoaded: false,
+                honorDataLoaded: false,
                 honorData: {},
                 infoCatesLv2: []
             };
@@ -338,57 +338,34 @@
             },
             indexBannerSwiper () {
                 return this.$refs.indexBannerSwiper.swiper;
+            },
+            isHonorAreaRendered () {
+                if (this.$store.getters.isPhone === false && this.honorDataLoaded === true) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
         },
         methods: {
             getServiceCatesLv2Data () {
-                let getServiceCatesLv2 = () => {
-                    this.$axios.get('/wp-json/wp/v2/categories/?fields=id,name,acf&orderby=id&parent=1').then( (response) => {
-                        this.serviceCatesLv2 = response.data;
 
-                        localStorage.serviceCatesLv2 = JSON.stringify(this.serviceCatesLv2);
-                    });
-                }
-
-                if (this.optionUpdated) {
-                    getServiceCatesLv2();
-                } else {
-                    if (localStorage.serviceCatesLv2 === undefined) {
-                        getServiceCatesLv2();
-                    } else {
-                        this.serviceCatesLv2 = JSON.parse(localStorage.serviceCatesLv2);
-                    }
-                }
+                this.$getDataFromServerOrCache('/wp-json/wp/v2/categories/?fields=id,name,acf&orderby=id&parent=1','serviceCatesLv2','serviceCatesLv2',this.optionUpdated,null,false,null,null);
 
             },
             getInfoCatesLv2Data () {
-                let getInfoCatesLv2 = () => {
-                    this.$axios.get('/wp-json/wp/v2/categories/?fields=id,name&orderby=id&parent=4').then( (response) => {
-                        this.infoCatesLv2 = response.data;
 
-                        localStorage.infoCatesLv2 = JSON.stringify(this.infoCatesLv2);
-                    });
-                }
-
-                if (this.optionUpdated) {
-                    getInfoCatesLv2();
-                } else {
-                    if (localStorage.infoCatesLv2 === undefined) {
-                        getInfoCatesLv2();
-                    } else {
-                        this.infoCatesLv2 = JSON.parse(localStorage.infoCatesLv2);
-                    }
-                }
+                this.$getDataFromServerOrCache('/wp-json/wp/v2/categories/?fields=id,name&orderby=id&parent=4','infoCatesLv2','infoCatesLv2',this.optionUpdated,null,false,null,null);
 
             },
             getAdvantageData () {
 
-                // this.$axios.get('/wp-json/acf/v3/pages/27').then( (response) => {
-                //     this.advantageData = response.data;
-                //     this.isAdvantageDataLoaded = true;
-                // });
-
                 this.$getDataFromServerOrCache('/wp-json/wp/v2/pages/27?fields=id,title,acf','advantageData','pageData27',this.contentUpdated,'isAdvantageDataLoaded',false,null,null);
+
+            },
+            getHonorData () {
+
+                this.$getData('/json-api/get_category_posts/?include=id,title,thumbnail&count=8&id=28','honorData','honorDataLoaded',false,null,null,null,'no-dataProcessor');
 
             }
         },
@@ -400,10 +377,7 @@
 
             this.getAdvantageData();
 
-            this.$axios.get('/json-api/get_category_posts/?include=id,title,thumbnail&count=8&id=28').then( (response) => {
-                this.honorData = response.data;
-                this.isHonorDataLoaded = true;
-            });
+            this.getHonorData();
 
             this.getInfoCatesLv2Data();
 

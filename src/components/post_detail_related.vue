@@ -52,36 +52,36 @@
             },
         },
         methods: {
-            getData () {
-                // this.relatedPosts = [];
-                this.$axios.get('/wp-json/wp/v2/posts/?fields=id,title&per_page=10&categories='+this.cateId).then( (response) => {
-                    var relatedPostsData = response.data;
+            getRelatedPostsData () {
 
+                let afterGetFunc = () => {
+                    if (this.relatedPosts.length === 0) {
+                        this.noRelatedPosts = true;
+                    }
+                }
+
+                let dataProcessor = (originalData) => {
                     // 从相关文章信息数组中删除当前文章对象
-                    var objectToFind = (obj) => {
+                    let objectToFind = (obj) => {
                         // console.log(this);
                         if (obj.id == this.routePostId) {
                             return obj;
                         }
                     };
-                    var objectIndex = relatedPostsData.findIndex(objectToFind);
-                    relatedPostsData.splice(objectIndex,1);
+                    let objectIndex = originalData.findIndex(objectToFind);
+                    originalData.splice(objectIndex,1);
+                }
 
-                    this.relatedPosts = relatedPostsData;
-                    this.relatedPostsLoaded = true;
+                this.$getData('/wp-json/wp/v2/posts/?fields=id,title&per_page=10&categories='+this.cateId,'relatedPosts','relatedPostsLoaded',false,null,afterGetFunc,null,dataProcessor);
 
-                    if (this.relatedPosts.length === 0) {
-                        this.noRelatedPosts = true;
-                    }
-                });
             }
         },
         created () {
-            this.getData();
+            this.getRelatedPostsData();
         },
         watch: {
             $route () {
-                this.getData();
+                this.getRelatedPostsData();
             }
         }
     }

@@ -146,30 +146,20 @@
         },
         methods: {
             getPostData () {
-                this.postDataLoaded = false;
-                this.$axios.get('/wp-json/wp/v2/posts/'+this.routePostId+'?fields=id,date,title,content,categories,acf').then( (response) => {
-                    this.postData = response.data;
-                    this.postDataLoaded = true;
 
+                let afterGetFunc = () => {
                     document.title = this.postData.title.rendered+this.$baseTitle;
-                });
+                }
+
+                this.$getData('/wp-json/wp/v2/posts/'+this.routePostId+'?fields=id,date,title,content,categories,acf','postData','postDataLoaded',true,null,afterGetFunc,null,'no-dataProcessor');
+
             },
             getBreadcrumbCateLv1Data () {
-
-                // this.$axios.get('/wp-json/wp/v2/categories/'+this.routeCateLv1Id+'/?fields=id,name').then( (response) => {
-                //     this.breadcrumbCateLv1Data = response.data;
-                //     this.isBreadcrumbCateLv1DataLoaded = true;
-                // });
 
                 this.$getDataFromServerOrCache('/wp-json/wp/v2/categories/'+this.routeCateLv1Id+'/?fields=id,name','breadcrumbCateLv1Data','categoryData'+this.routeCateLv1Id,this.optionUpdated,'isBreadcrumbCateLv1DataLoaded',false,null,null);
 
             },
             getBreadcrumbCateData () {
-
-                // this.$axios.get('/wp-json/wp/v2/categories/'+this.routeCateId+'/?fields=id,name').then( (response) => {
-                //     this.breadcrumbCateData = response.data;
-                //     this.isBreadcrumbCateDataLoaded = true;
-                // });
 
                 this.$getDataFromServerOrCache('/wp-json/wp/v2/categories/'+this.routeCateId+'/?fields=id,name','breadcrumbCateData','categoryData'+this.routeCateId,this.optionUpdated,'isBreadcrumbCateDataLoaded',false,null,null);
 

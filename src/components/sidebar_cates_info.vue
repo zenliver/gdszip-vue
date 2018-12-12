@@ -32,23 +32,8 @@
         },
         methods: {
             getInfoCatesLv2Data () {
-                let getInfoCatesLv2 = () => {
-                    this.$axios.get('/wp-json/wp/v2/categories/?fields=id,name&orderby=id&parent='+this.routeCateLv1Id).then( (response) => {
-                        this.infoCatesLv2 = response.data;
 
-                        localStorage.infoCatesLv2 = JSON.stringify(this.infoCatesLv2);
-                    });
-                }
-
-                if (this.optionUpdated) {
-                    getInfoCatesLv2();
-                } else {
-                    if (localStorage.infoCatesLv2 === undefined) {
-                        getInfoCatesLv2();
-                    } else {
-                        this.infoCatesLv2 = JSON.parse(localStorage.infoCatesLv2);
-                    }
-                }
+                this.$getDataFromServerOrCache('/wp-json/wp/v2/categories/?fields=id,name&orderby=id&parent='+this.routeCateLv1Id,'infoCatesLv2','infoCatesLv2',this.optionUpdated,null,false,null,null);
 
             },
 

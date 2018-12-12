@@ -3,17 +3,20 @@
 
         <div id="app_loading" :style="appLoadingStyle" v-if="!reduxDataLoaded">
             <div class="app_loading_logo">
-                <img src="./assets/images/logo.png" alt="" class="img-responsive">
+                <img src="./assets/images/logo.png" alt="" class="img-responsive" v-if="isNotPhone">
+                <img src="./../static/images/app_icon/icon-72-hdpi.png" alt="" class="img-responsive" v-if="!isNotPhone">
+                <div class="app_loading_logo_txt text-center" v-if="!isNotPhone">吴彬律师</div>
             </div>
             <VueElementLoading :height="'100px'" :bg="'#f1f1f1'" v-if="!showLoadingError"></VueElementLoading>
-            <div class="app_loading_error text-center" v-if="showLoadingError">😥抱歉，服务器连接失败，请稍后再试。</div>
+            <div class="app_loading_error text-center" v-if="showLoadingError">😥抱歉，服务器连接失败，请重试。</div>
+            <div class="app_loading_suport text-center">技术支持：zenliver</div>
         </div>
 
         <div id="app_wrapper" :class="appWrapperSlideClass" @animationend="removeAnimationClass" v-if="reduxDataLoaded">
             <Header :optionUpdated="optionUpdated" :phoneCateName="headerPhoneCateName" :phonePageTitle="headerPhonePageTitle" @toggleButtonClicked="showCollapseMenu"></Header>
             <div id="header_placeholder"></div>
             <BannerInner v-if="isNotIndexRoute"></BannerInner>
-            <transition name="fade">
+            <transition>
                 <router-view :reduxData="reduxData" :optionUpdated="optionUpdated" :contentUpdated="contentUpdated" @cateDataLoaded="recieveCateName" @pageTitleLoaded="recievePageTitle" v-if="reduxDataLoaded"></router-view>
             </transition>
             <Footer :reduxData="reduxData" v-if="isNotPhone"></Footer>
@@ -69,7 +72,7 @@
             appLoadingStyle () {
                 let windowHeight = window.innerHeight;
                 return {
-                    marginTop: (windowHeight-156)/2+'px'
+                    marginTop: (windowHeight-230)/2+'px'
                 };
             },
             isNotIndexRoute () {
@@ -90,52 +93,44 @@
         },
         methods: {
             checkAppDataUpdate () {
-                this.$axios.get('/wp-content/themes/gdszip/data/appdataver-json-cors.php').then( (response) => {
-                    this.appDataVer = response.data;
-                    // console.log(typeof(this.appDataVer.optionVer));
-                    this.appDataVerLoaded = true;
+
+                let afterGetFunc = () => {
 
                     // 检查后台设置是否有更新
-                    if (localStorage.optionVer === undefined) {
+                    if (window.localStorage.getItem('optionVer') === null) {
                         this.optionUpdated = true;
-                        localStorage.setItem('optionVer',this.appDataVer.optionVer);
+                        window.localStorage.setItem('optionVer',this.appDataVer.optionVer);
                     } else {
-                        if (this.appDataVer.optionVer !== localStorage.optionVer) {
+                        if (this.appDataVer.optionVer !== window.localStorage.getItem('optionVer')) {
                             this.optionUpdated = true;
-                            localStorage.optionVer = this.appDataVer.optionVer;
+                            window.localStorage.setItem('optionVer',this.appDataVer.optionVer);
                         }
                     }
 
                     // 检查网站内容是否有更新
-                    if (localStorage.contentVer === undefined) {
+                    if (window.localStorage.getItem('contentVer') === null) {
                         this.contentUpdated = true;
-                        localStorage.setItem('contentVer',this.appDataVer.contentVer);
+                        window.localStorage.setItem('contentVer',this.appDataVer.contentVer);
                     } else {
-                        if (this.appDataVer.contentVer !== localStorage.contentVer) {
+                        if (this.appDataVer.contentVer !== window.localStorage.getItem('contentVer')) {
                             this.contentUpdated = true;
-                            localStorage.contentVer = this.appDataVer.contentVer;
+                            window.localStorage.setItem('contentVer',this.appDataVer.contentVer);
                         }
                     }
 
+                    // 检查更新后获取reduxData
                     this.getReduxData();
 
-                }).catch( (error) => {
+                };
+
+                let errorHandler = () => {
                     this.showLoadingError = true;
-                });
+                };
+
+                this.$getData('/wp-content/themes/gdszip/data/appdataver-json-cors.php','appDataVer','appDataVerLoaded',false,null,afterGetFunc,errorHandler,'no-dataProcessor');
+
             },
             getReduxData () {
-
-                // if (this.optionUpdated) {
-                //     this.$axios.get('/data/json-cors.php?file=redux_options.json').then( (response) => {
-                //         this.reduxData = response.data;
-                //         this.reduxDataLoaded = true;
-                //
-                //         localStorage.reduxData = JSON.stringify(this.reduxData);
-                //     });
-                // } else {
-                //     this.reduxData = JSON.parse(localStorage.reduxData);
-                //     this.reduxDataLoaded = true;
-                // }
 
                 this.$getDataFromServerOrCache('/data/json-cors.php?file=redux_options.json','reduxData','reduxData',this.optionUpdated,'reduxDataLoaded',false,null,null);
 
@@ -204,5 +199,16 @@
         padding-top: 30px;
         padding-bottom: 30px;
         font-size: 16px;
+    }
+    .app_loading_logo_txt {
+        font-size: 20px;
+        color: #0798db;
+        font-weight: bold;
+        padding-top: 20px;
+    }
+    .app_loading_suport {
+        color: #aaa;
+        font-size: 12px;
+        padding-top: 20px;
     }
 </style>

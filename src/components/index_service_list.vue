@@ -24,23 +24,8 @@
         },
         methods: {
             getServiceCatesData () {
-                let getServiceCates = () => {
-                    this.$axios.get('/wp-json/wp/v2/categories/?fields=id,name&orderby=id&parent='+this.serviceCateId).then( (response) => {
-                        this.serviceCates = response.data;
 
-                        localStorage.setItem('categorySubs'+this.serviceCateId,JSON.stringify(this.serviceCates));
-                    });
-                }
-
-                if (this.optionUpdated) {
-                    getServiceCates();
-                } else {
-                    if (localStorage.getItem('categorySubs'+this.serviceCateId) === null) {
-                        getServiceCates();
-                    } else {
-                        this.serviceCates = JSON.parse( localStorage.getItem('categorySubs'+this.serviceCateId) );
-                    }
-                }
+                this.$getDataFromServerOrCache('/wp-json/wp/v2/categories/?fields=id,name&orderby=id&parent='+this.serviceCateId,'serviceCates','categorySubs'+this.serviceCateId,this.optionUpdated,null,false,null,null);
 
             }
         },

@@ -89,13 +89,6 @@
         methods: {
             getPageData () {
 
-                // this.$axios.get('/wp-json/wp/v2/pages/'+this.routeId+'?fields=id,title,content').then( (response) => {
-                //     this.pageData = response.data;
-                //     this.pageDataLoaded = true;
-                //
-                //     this.$emit('pageDataLoaded',this.pageData.title.rendered);
-                // });
-
                 let afterGetFunc = () => {
                     this.$emit('pageDataLoaded',this.pageData.title.rendered);
                 }
@@ -103,19 +96,22 @@
 
             },
             getAskData () {
-                this.$axios.get(this.apiUrl).then( (response) => {
-                    this.askData = response.data;
-                });
+
+                this.$getData(this.apiUrl,'askData',null,false,null,null,null,'no-dataProcessor');
+
             },
             getAboutAllAskData () {
-                this.$axios.get(this.apiBase0+'&per_page=100&post='+'180').then( (response) => {
-                    this.aboutAllAskData = response.data;
+
+                let afterGetFunc = () => {
                     this.askPagiCount = Math.ceil((this.aboutAllAskData.length)/(this.askPerPage));
 
                     if (this.askPagiCount > 0) {
                         this.hasComments = true;
                     }
-                });
+                }
+
+                this.$getData(this.apiBase0+'&per_page=100&post='+'180','aboutAllAskData',null,false,null,afterGetFunc,null,'no-dataProcessor');
+
             },
             getPagiAskData (clickedPageNum) {
                 this.pagiNum = clickedPageNum;
@@ -124,16 +120,21 @@
             },
             postComment () {
 
-                this.$axios.post('/json-api/respond/submit_comment/?post_id=180&name='+this.askFormName+'&email=everyone@gdszip.com&url='+this.askFormTel+'&content='+this.askFormContent+' [本条咨询来自APP]').then( (response) => {
-                    // console.log(response);
+                let successHandler = () => {
                     alert('您的咨询已提交成功，将在律师阅读后显示。吴彬律师会尽快联系您，希望能帮助您解决问题。');
                     this.askFormContent = '';
-                }).catch( (error) => {
-                    if (error.response) {
-                        // console.log(error.response);
-                    }
+                }
+
+                let errorHandler = () => {
                     alert('抱歉，提交失败，请修改后重新提交。');
-                });
+                }
+
+                this.$postData(
+                    '/json-api/respond/submit_comment/?post_id=180&name='+this.askFormName+'&email=everyone@gdszip.com&url='+this.askFormTel+'&content='+this.askFormContent+' [本条咨询来自APP]',
+                    null,
+                    successHandler,
+                    errorHandler
+                );
 
             },
         },
